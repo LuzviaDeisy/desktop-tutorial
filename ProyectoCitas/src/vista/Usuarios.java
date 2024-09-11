@@ -185,6 +185,11 @@ public class Usuarios extends javax.swing.JFrame {
         });
 
         btnNuevo.setText("Nuevo");
+        btnNuevo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnNuevoActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -467,6 +472,53 @@ public class Usuarios extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Error al realizar la búsqueda: " + e.toString());
         }
     }//GEN-LAST:event_btnBuscarActionPerformed
+
+    private void btnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoActionPerformed
+        // TODO add your handling code here:
+        // Obtener los valores de los campos de texto
+        String identificacion = txtIdentificacion.getText();
+        String nombre = txtNombre.getText();
+        String apellido = txtApellido.getText();
+        String correo = txtCorreo.getText();
+
+        // Verificar si algún campo está vacío
+        if (identificacion.isEmpty() || nombre.isEmpty() || apellido.isEmpty() || correo.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Por favor, complete todos los campos.");
+            return;
+        }
+
+        // Insertar el nuevo usuario en la base de datos
+        String query = "INSERT INTO Usuarios (Identificacion, Nombres, Apellidos, Correo) VALUES (?, ?, ?, ?)";
+
+        try {
+            // Obtener la conexión a la base de datos
+            con = Conexion.getConexion();
+
+            // Preparar la sentencia
+            pst = con.prepareStatement(query);
+            pst.setInt(1, Integer.parseInt(identificacion)); // Convertir Identificación a entero
+            pst.setString(2, nombre);
+            pst.setString(3, apellido);
+            pst.setString(4, correo);
+
+            // Ejecutar la inserción
+            int resultado = pst.executeUpdate();
+
+            if (resultado > 0) {
+                JOptionPane.showMessageDialog(null, "Usuario agregado exitosamente.");
+                limpiarCampos(); // Limpiar los campos de texto después de agregar
+                listarUsuarios(); // Actualizar la tabla para mostrar el nuevo registro
+            } else {
+                JOptionPane.showMessageDialog(null, "Error al agregar usuario.");
+            }
+
+            // Cerrar la conexión y los recursos
+            pst.close();
+            con.close();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error: " + e.getMessage());
+        }
+    }//GEN-LAST:event_btnNuevoActionPerformed
 
     // Método para limpiar los campos de texto después de agregar
     private void limpiarCampos() {
